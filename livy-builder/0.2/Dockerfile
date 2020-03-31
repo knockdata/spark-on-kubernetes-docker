@@ -23,6 +23,8 @@ RUN echo "deb https://dl.bintray.com/sbt/debian /" | tee -a /etc/apt/sources.lis
     apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 2EE0EA64E40A89B84B2DF73499E82A75642AC823 && \
     apt-get -qq update && \
     apt-get -qq install sbt
+    
+RUN ln -s /usr/bin/python3 /usr/bin/python
 
 ENV JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
 ENV M2_HOME=/opt/maven

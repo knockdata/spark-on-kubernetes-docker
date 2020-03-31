@@ -18,7 +18,7 @@
 
 # echo commands to the terminal output
 set -ex
-
+echo $@
 # Check whether there is a passwd entry for the container UID
 myuid=$(id -u)
 mygid=$(id -g)
@@ -45,7 +45,7 @@ case "$SPARK_K8S_CMD" in
       ;;
     *)
       echo "Non-spark-on-k8s command provided, proceeding in pass-through mode..."
-      exec /usr/bin/tini -s -- "$@"
+      exec /sbin/tini -s -- "$@"
       ;;
 esac
 
@@ -53,8 +53,8 @@ SPARK_CLASSPATH="$SPARK_CLASSPATH:${SPARK_HOME}/jars/*"
 env | grep SPARK_JAVA_OPT_ | sort -t_ -k4 -n | sed 's/[^=]*=\(.*\)/\1/g' > /tmp/java_opts.txt
 readarray -t SPARK_EXECUTOR_JAVA_OPTS < /tmp/java_opts.txt
 
-if [ -n "$SPARK_EXTRA_CLASSPATH" ]; then
-  SPARK_CLASSPATH="$SPARK_CLASSPATH:$SPARK_EXTRA_CLASSPATH"
+if [ -n "${SPARK_DIST_CLASSPATH}" ]; then
+  SPARK_CLASSPATH="$SPARK_CLASSPATH:${SPARK_DIST_CLASSPATH}"
 fi
 
 if [ -n "$SPARK_EXTRA_CLASSPATH" ]; then
@@ -116,7 +116,6 @@ case "$SPARK_K8S_CMD" in
     CMD=(
       ${JAVA_HOME}/bin/java
       "${SPARK_EXECUTOR_JAVA_OPTS[@]}"
-      -Xms$SPARK_EXECUTOR_MEMORY
       -Xmx$SPARK_EXECUTOR_MEMORY
       -cp "$SPARK_CLASSPATH"
       org.apache.spark.executor.CoarseGrainedExecutorBackend
@@ -134,4 +133,4 @@ case "$SPARK_K8S_CMD" in
 esac
 
 # Execute the container CMD under tini for better hygiene
-exec /usr/bin/tini -s -- "${CMD[@]}"
+exec /sbin/tini -s -- "${CMD[@]}"

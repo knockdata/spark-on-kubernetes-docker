@@ -1,18 +1,10 @@
 {
-  "kernel_python_credentials" : {
+  "kernel_credentials" : {
     "username": "",
     "password": "",
     "url": "http://localhost:8998",
     "auth": "None"
   },
-
-  "kernel_scala_credentials" : {
-    "username": "",
-    "password": "",
-    "url": "http://localhost:8998",
-    "auth": "None"
-  },
-
   "logging_config": {
     "version": 1,
     "formatters": {
@@ -46,9 +38,23 @@
 
   "session_configs": {
     "driverMemory": "1000M",
-    "executorCores": 2
+    "executorCores": 2, 
+    "conf":{
+        "spark.kubernetes.file.upload.path":  "s3a_bucket",
+        "spark.hadoop.fs.s3a.access.key": "s3a_access_key",
+        "spark.hadoop.fs.s3a.secret.key": "s3a_secret_key",
+        "spark.hadoop.fs.s3a.impl": "org.apache.hadoop.fs.s3a.S3AFileSystem",
+        "spark.hadoop.fs.s3a.fast.upload": "true",
+        "spark.driver.extraJavaOptions": "-Divy.cache.dir=/tmp -Divy.home=/tmp",
+        "spark.jars.packages": "com.amazonaws:aws-java-sdk:1.7.4,org.apache.hadoop:hadoop-aws:3.2.0",
+        "spark.metrics.conf.*.sink.prometheusServlet.class": "org.apache.spark.metrics.sink.PrometheusServlet",
+        "spark.metrics.conf.*.sink.prometheusServlet.path": "/metrics/",
+        "spark.metrics.conf.master.sink.prometheusServlet.path": "/metrics/master/prometheus",
+        "spark.metrics.conf.applications.sink.prometheusServlet.path": "/metrics/applications/prometheus",
+        "spark.kubernetes.driver.label.k8s-app":  "spark-metrics",
+        "spark.kubernetes.driver.service.label.k8s-app":  "spark-metrics"
+        }
   },
-
   "use_auto_viz": true,
   "coerce_dataframe": true,
   "max_results_sql": 2500,
@@ -63,5 +69,6 @@
 
   "retry_policy": "configurable",
   "retry_seconds_to_sleep_list": [0.2, 0.5, 1, 3, 5],
-  "configurable_retry_policy_max_retries": 16
+  "configurable_retry_policy_max_retries": 16,
+  "owner": "owner_name"
 }
